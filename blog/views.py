@@ -4,13 +4,19 @@ from .forms import PostForm
 
 from .models import Post, Comments
 from .forms import CommentForm
-
+#from django.db.models import Q  
 
 # Create your views here.
 
 def post_list(request):
-    posts = Post.objects.all()
-    print(posts.query)
+   
+    busqueda=request.GET.get('busqueda',None)
+    if busqueda:
+        posts=Post.objects.filter(title__icontains=busqueda)
+    else:
+        posts = Post.objects.all()
+    
+    
     return render(request, 'blog/blog_list.html', {'posts': posts})
 
 
@@ -61,8 +67,22 @@ def post_delete(request, pk):
 
 def post_detail(request, pk):
     # buscamos el post y lo mostramos
+    context = {}
     post = get_object_or_404(Post, id=pk)
-    return render(request, 'blog/blog_detail.html', {'post': post})
+    formComentario = CommentForm()
+    context['post'] = post
+    context['formComentario'] = formComentario
+    if request.method == 'POST':
+        formComentario = CommentForm(request.POST)
+        context['formComentario'] = formComentario
+        if formComentario.is_valid():
+            comment = formComentario.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+            return redirect('post_detail', pk=post.pk)
+
+    return render(request, 'blog/blog_detail.html', context=context)
 
 def comment_create(request, pk):
     # buscamos el post y lo mostramos

@@ -3,7 +3,7 @@
 
 {% block content %}
 
-    <h1 class="text-center mt-5">Regístrese</h1>
+    <h1 class="text-center mt-5">Regístrese en CCVA</h1>
     <div class="d-flex justify-content-center">
 
         <div class="card text-dark bg-light mb-3" style="max-width: 40rem;">
@@ -20,7 +20,7 @@
                     <form action="" method="post">
                         {% csrf_token %}
                         {{ form|crispy }}
-                        <button type="submit" class="btn btn-success">Confirmar</button>
+                        <button type="submit" class="btn btn-primary">Confirmar</button>
                     </form>
                 </div>
             </div>

@@ -1,24 +1,69 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
+
+{% block menu %}
+        <nav class="navbar navbar-expand-lg navbar-dark " style="background-color:#48CAE4 ;">
+            <div class="container">
+              
+                <a class="navbar-brand" href="{% url 'index' %}"><img class="img-fluid" src="{% static 'bootstrap/img/logo1.png' %}" width="350"  alt="..." /></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+                        
+                        <li class="nav-item"><a class="nav-link" href="https://docs.google.com/forms/d/e/1FAIpQLScbb_to7EHUt5qFRFpZ0pSQxfG2Bt1Fxq-kmbJJ-DtS1_6aLw/viewform" target="_blank">Contacto</a></li>
+                        <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'post_list'  %}">Noticias</a></li>  <!--REDIRIGE A LA LISTA DE POSTs-->
+                    </ul>
+                </div>
+            </div>
+            <!--  BOTONES DE REG. Y LOGIN  -->
+            <nav class="navbar ">
+                <form class="container-fluid justify-content-end">
+                  {% if request.user.is_authenticated %}
+                  <button class="btn btn-primary me-2" type="button">Usuario: {{ user }}</button>
+                  {% else %}
+                  <a href="{% url 'registrar_usuario' %}"><button class="btn btn-outline-primary me-2 btn-dark" type="button">Registrarse</button></a> 
+                  {% endif %}
+
+                  {% if request.user.is_authenticated %}
+                  <a href="{% url 'logout' %}" class="nav-link"><button class="btn btn-sm btn-outline-secondary btn-dark" type="button">Cerrar sesion</button></a>
+                  {% else %}
+                  <a href="{% url 'login' %}"><button class="btn btn-sm btn-outline-secondary btn-dark" type="button">Iniciar sesion
+                    {% endif %}
+                  </button></a>
+
+                </form>
+              </nav>
+            </nav> <!--FIN BARRA DE NAVEGACION-->
+    {%endblock %} <!-- FIN BLOQUE CONTENIDO MENU-->
 
 {% block content %}
 <div class="container">
-    <h1 class="text-center">Post: {{ post.title }}</h1>
+    <h1 class="text-center">Noticia: {{ post.title }}</h1>
 
     <div class="text-center">
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="container col-md-6">
                 <img src="{{ post.imagen.url }}" class="img-fluid" alt="Imagen del post">
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="container ">
             <p>{{ post.content }}</p>
         </div>
         
     </div>
-    <a href="{% url 'post_list' %}" class="btn btn-primary">Volver</a>
-    <a href="{% url 'comment_create' post.id %}" class="btn btn-primary">Comentar</a>
+    <form action="" method="post">
+        {%csrf_token%}
+        {{formComentario |crispy }}
+        
+        <button type="submit" class="btn btn-primary">Comentar</button>
+        <a href="{% url 'post_list' %}" class="btn btn-primary">Volver</a>
+    </form>
+    
+    <!--<a href="{% url 'comment_create' post.id %}" class="btn btn-primary">Comentar</a>-->
     <hr>
     {% for comment in post.comments.all %}
     <div class="row">
@@ -30,7 +75,7 @@
         {% if request.user.is_authenticated %}
         <div class="container">
             {% if request.user == comment.user %}
-                <p>Soy el dueño {{ request.user }}</p>
+                <p>Comentario de: {{ request.user }}</p>
                 <a href="{% url 'comment_update' comment.id %}" class="btn btn-primary">Editar comentario</a>
                 <a href="{% url 'comment_delete' comment.id %}" class="btn btn-danger">Borrar comentario</a>
             {% endif %}
